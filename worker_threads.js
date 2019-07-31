@@ -1,26 +1,38 @@
-const { Worker,isMainThread,parentPort,workerData,threadId} = require('worker_threads')
+const { Worker,isMainThread,parentPort,workerData,threadId,MessageChannel,MessagePort} = require('worker_threads')
 
 function mainThread(){
-    const worker = new Worker(__filename,{workerData:0})
+    // const worker = new Worker(__filename,{workerData:0})
+    const worker1=new Worker(__filename)
+    const worker2=new Worker(__filename)
 
-    worker.on('exit', code => { console.log(`main: worker stopped with exit code ${code}`); });
+    const subChannel=new MessageChannel()
+    worker1.postMessage({hereIsYourPort:subChannel.port1},[subChannel.port1])
+    worker2.postMessage({hereIsYourPort:subChannel.port2},[subChannel.port2])
 
-    worker.on('message', msg => {
-        console.log(`main: receive ${msg}`);
-        worker.postMessage(msg + 1);
-    });
+    // worker.on('exit', code => { console.log(`main: worker stopped with exit code ${code}`); });
+
+    // worker.on('message', msg => {
+    //     console.log(`main: receive ${msg}`);
+    //     worker.postMessage(msg + 1);
+    // });
 }
 
 function workerThread(){
-    console.log(`worker: threadId ${threadId} start with ${__filename}`)
-    console.log(`worker:workerData ${workerData}`)
+    // console.log(`worker: threadId ${threadId} start with ${__filename}`)
+    // console.log(`worker:workerData ${workerData}`)
 
-    parentPort.on('message',msg=>{
-        console.log(`worker:receive ${msg}`)
-        if(msg===5){process.exit()}
-        parentPort.postMessage(msg)
+    // parentPort.on('message',msg=>{
+    //     console.log(`worker:receive ${msg}`)
+    //     if(msg===5){process.exit()}
+    //     parentPort.postMessage(msg)
+    // })
+    // parentPort.postMessage(workerData)
+    parentPort.once('message',value=>{
+        value.hereIsYourPort.postMessage('hello')
+        value.hereIsYourPort.on('message',msg=>{
+            console.log(`thread ${threadId}: receive ${msg}`)
+        })
     })
-    parentPort.postMessage(workerData)
 }
 
 if(isMainThread){
