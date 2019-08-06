@@ -51,6 +51,26 @@ const kParentSideStdio = Symbol('kParentSideStdio');
 
 const SHARE_ENV = Symbol.for('nodejs.worker_threads.SHARE_ENV');
 
-const debug = require('internal/util/debuglog').debuglog('worker')
+const debug = require('internal/util/debuglog').debuglog('worker');
+
+//curent work dir
+let cwdCounter
+
+class Worker extends EventEmitter{
+    constructor(filename,options={}){
+        super()
+        debug(`[${threadId}] create new worker`,filename,options)
+        valiadateString(filename,'filename')
+
+        if(options.execArgv&&!Array.isArray(options.execArgv)){
+            throw new ERR_INVALID_ARG_TYPE('options.execArgv','array',options.execArgv)
+        }
+
+        if(!options.eval){
+            //判断是否是绝对路径
+            if(!path.isAbsolute(filename)&&!/^\.\.?[\\/]/.test(filename)){}
+        }
+    }
+}
 
 
