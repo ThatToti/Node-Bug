@@ -67,8 +67,21 @@ class Worker extends EventEmitter{
         }
 
         if(!options.eval){
-            //判断是否是绝对路径
-            if(!path.isAbsolute(filename)&&!/^\.\.?[\\/]/.test(filename)){}
+            //判断是否是绝对路径，不是的话，报错
+            if(!path.isAbsolute(filename)&&!/^\.\.?[\\/]/.test(filename)){
+                throw new ERR_WORKER_PATH(filename);
+            }
+
+            //解析为绝对路径
+            filename = path.resolve(filename);
+
+            //返回文件类型尾缀
+            const ext = path.extname(filename)
+
+            //非 js 文件类型，则报文件错误
+            if(ext!=='.js'&&ext!=='.mjs'){
+                throw new ERR_WORKER_UNSUPPORTED_EXTENSION(ext);
+            }
         }
     }
 }
