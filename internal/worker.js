@@ -56,6 +56,7 @@ const debug = require('internal/util/debuglog').debuglog('worker');
 //curent work dir
 let cwdCounter
 
+// worker继承了eventemitter 为了用它的on 和 emit
 class Worker extends EventEmitter {
     constructor(filename, options = {}) {
         super()
