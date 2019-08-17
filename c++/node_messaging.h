@@ -61,5 +61,27 @@ namespace worker{
 
         friend class MessagePort
     }
+
+    class MessagePortData:public Memoryretainer{
+        public:
+            explicit MessagePortData(MessagePort* owener)
+            ~MessagePortData() override
+
+            MessagePortData(MessagePortData&& other) = delete
+            MessagePortData& operator=(MessagePortData&& other) = delete
+            MessagePortData(const MessagePortData& other) = delete
+            MessagePortData& operator=(const MessagePortData& other) = delete
+
+            void AddToIncomingQueue(Message&& message)
+
+            static void Entangle(MessagePortData* a,MessagePortData* b)
+
+            void Disentangle()
+
+            void MemoryInfo(MemoryTracker* tracker) const override
+
+            SET_MEMORY_INFO_NAME(MessagePortData)
+            SET_SELF_SIZE(MessagePortData)
+    }
 }
 }
