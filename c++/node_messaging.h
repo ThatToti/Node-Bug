@@ -82,6 +82,15 @@ namespace worker{
 
             SET_MEMORY_INFO_NAME(MessagePortData)
             SET_SELF_SIZE(MessagePortData)
+
+        private:
+            mutable Mutex mutex_
+            std::list<Message> incoming_messages_
+            MessagePort* owner_=nullptr
+            std::shared_ptr<Mutex> sibling_mutex_ = std::make_shared<Mutex>()
+            MessagePortData* sibling_=nullptr
+
+            friend class MessagePort
     }
 }
 }
